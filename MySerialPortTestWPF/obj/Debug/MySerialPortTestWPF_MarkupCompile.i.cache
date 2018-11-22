@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\App.xaml
-21920830497
+4-1257911721
 
 141788146552
 16-952127752
-MainWindow.xaml;Styles\ComoBoxs.xaml;
+MainWindow.xaml;Styles\Buttons.xaml;Styles\ComoBoxs.xaml;Styles\Texts.xaml;
 
-False
+True
 

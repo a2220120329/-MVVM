@@ -6,8 +6,21 @@
         xmlns:local="clr-namespace:MySerialPortTestWPF"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
+        
         Title="串口通信助手" Height="450" Width="600">
-    <Border Padding="5">
+    <Border Padding="2">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Background" >
+                    <Setter.Value>
+                        <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                            <GradientStop Color="#26a69a" Offset="0.0"/>
+                            <GradientStop Color="#009688" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Border.Style>
         <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
@@ -24,7 +37,7 @@
                 <!--串口设置区-->
                 <StackPanel Grid.Column="0" Margin="0 0 5 5">
                     <!--串口设置-->
-                    <Border BorderThickness="2" BorderBrush="LightGray">
+                    <Border BorderThickness="2" BorderBrush="White">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1.5*"/>
@@ -43,7 +56,7 @@
                             <ComboBox ItemsSource="{Binding SerialPortNums}" 
                                       SelectedItem="{Binding SelectedPortNum}"
                                       Grid.Column="1"
-                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="4.2,3,4.6,0" VerticalAlignment="Top">
+                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="4.2,3,3.8,0" VerticalAlignment="Top" Width="Auto">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="DropDownOpened">
                                         <i:InvokeCommandAction Command="{Binding UpdateSerialPortNames}"/>
@@ -84,40 +97,46 @@
                                       Grid.Column="1"
                                       Style="{StaticResource SerialPortComoBoxStyle}"/>
                             <!--串口操作-->
-                            <Label Content="校验位" Grid.Row="5"/>
-                            <!--To Do 修改ComboBox Binding-->
+                            <Label Content="操作位" Grid.Row="5"/>
                             <StackPanel Orientation="Horizontal"
                                         Height="20"
                                           Width="80"
                                       Grid.Row="5"
                                       Grid.Column="1"
                                         HorizontalAlignment="Center">
-                                <Border Width="19" Height="19" CornerRadius="20">
+                                <!--串口状态指示-->
+                                <!--<Border Width="19" Height="19" CornerRadius="20">
                                     <Border.Style>
                                         <Style TargetType="{x:Type Border}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=OpenPortBtn,Path=IsChecked}" Value="false">
-                                                    <Setter Property="Background" Value="Red"/>
+                                                    <Setter Property="Background" Value="#bdbdbd"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=OpenPortBtn,Path=IsChecked}" Value="true">
-                                                    <Setter Property="Background" Value="Green"/>
+                                                    <Setter Property="Background" Value="#76ff03"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                </Border>
-                                <ToggleButton BorderThickness="0" Width="60"
+                                </Border>-->
+                                <ToggleButton BorderThickness="0" Width="80"
+                                              Height="20"
+                                              Style="{StaticResource ToggleBtnSytle}"                                                          
                                               x:Name="OpenPortBtn"
+                                              Background="Transparent"
                                               IsChecked="{Binding IsOpenBtnChecked,Mode=TwoWay,FallbackValue=false}"
                                               Command="{Binding OpenPortCommand}"
                                               Content="打开串口"/>
+
                             </StackPanel>
-                            
+
 
                         </Grid>
                     </Border>
                     <!--发送设置-->
-                    
+                    <Border  Margin="0 5 0 0" BorderBrush="White" BorderThickness="0 2 0 0"/>
+                    <Label Content="接收设置" />
+
                 </StackPanel>
                 <!--串口接收区-->
                 <Grid Grid.Column="1" Margin="0 0 0 5" >
@@ -125,20 +144,20 @@
                              VerticalScrollBarVisibility="Auto"
                              IsUndoEnabled="False"
                              TextWrapping="Wrap" 
-                             Background="Purple"
                              IsReadOnly="True"
-                             
+                             Background="Transparent"
+                             BorderThickness="2"
+                             Foreground="White"
+                             BorderBrush="White"
                              Text="{Binding Rx_Str}"
                                />
                 </Grid>
-                
-
             </Grid>
             <!--串口发送设置及发送区-->
-            <Grid Grid.Row="1" Background="Yellow"/>
+            <Grid Grid.Row="1" Background="Transparent"/>
             <!--串口状态显示区-->
-            <Grid Grid.Row="2" Background="green"/>
+            <Grid Grid.Row="2" Background="Transparent"/>
         </Grid>
     </Border>
-    
+
 </Window>

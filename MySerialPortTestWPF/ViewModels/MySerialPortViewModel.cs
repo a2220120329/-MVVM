@@ -82,27 +82,28 @@ namespace MySerialPortTestWPF
             //init the public properties
             #region PortNums
             SerialPortNums = new ObservableCollection<string>();
-            if(SerialPort.GetPortNames().Length!=0)
-            SelectedPortNum = SerialPort.GetPortNames()[0];
+            if (SerialPort.GetPortNames().Length != 0)
+                SelectedPortNum = SerialPort.GetPortNames()[0];
             else
             {
                 //扫描有效串口  
-                 Task task=new Task(()=> {
-                     Boolean result = false;
-                     for(int i=0;i<5;i++)
-                     {
-                         Thread.Sleep(1000);
-                         if (SerialPort.GetPortNames().Length != 0)
-                         { SelectedPortNum = SerialPort.GetPortNames()[0];
-                             result = true;
-                             break;
-                         }
-                     }
-                     if(result==false)
-                     MessageBox.Show("未扫描到有效串口请检查串口连接或驱动。");
-                 });
-                
-                
+                Task task = new Task(() => {
+                    Boolean result = false;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Thread.Sleep(1000);
+                        if (SerialPort.GetPortNames().Length != 0)
+                        {
+                            SelectedPortNum = SerialPort.GetPortNames()[0];
+                            result = true;
+                            break;
+                        }
+                    }
+                    if (result == false)
+                        MessageBox.Show("未扫描到有效串口请检查串口连接或驱动。");
+                });
+
+
             }
             #endregion
 
@@ -114,7 +115,7 @@ namespace MySerialPortTestWPF
             #endregion
 
             #region init the StopBits 
-            SerialPortStopBits = new List<string> { "0","1", "1.5", "2" };
+            SerialPortStopBits = new List<string> { "0", "1", "1.5", "2" };
             SelectedPortStopBit = "1";
             StopBitsDic = new Dictionary<string, StopBits>();
             StopBitsDic.Add("0", StopBits.None);
@@ -124,12 +125,12 @@ namespace MySerialPortTestWPF
             #endregion
 
             #region init the DataBit
-            SerialPortDataBits = new List<int> { 8,7,6,5};
+            SerialPortDataBits = new List<int> { 8, 7, 6, 5 };
             SelectedPortDataBit = 8;
             #endregion
 
             #region init the Parity
-            SerialPortParities = new List<string> {"无", "奇校验", "偶校验", "校验位总为0", "校验位总为1"};
+            SerialPortParities = new List<string> { "无", "奇校验", "偶校验", "校验位总为0", "校验位总为1" };
             SelectedPortParity = "无";
             PortParityDic = new Dictionary<string, Parity>();
             PortParityDic.Add("无", Parity.None);
@@ -148,13 +149,13 @@ namespace MySerialPortTestWPF
             /// <summary>
             /// When the serialport comobox is been clicked update the serialport numbers.
             /// </summary>
-            UpdateSerialPortNames = new RelayCommand(()=> {
+            UpdateSerialPortNames = new RelayCommand(() => {
                 //若串口被更改
-                if (SerialPort.GetPortNames().ToString()!=SerialPortNums.ToString())
+                if (SerialPort.GetPortNames().ToString() != SerialPortNums.ToString())
                 {
                     SerialPortNums.Clear();//清空串口数据
                     string[] NewSerialPortNums = SerialPort.GetPortNames();
-                    for(int i=0;i<NewSerialPortNums.Length;i++)
+                    for (int i = 0; i < NewSerialPortNums.Length; i++)
                     {
                         SerialPortNums.Add(NewSerialPortNums[i]);
                     }
@@ -167,10 +168,10 @@ namespace MySerialPortTestWPF
             /// When the openport button is clicked close or open the port
             /// </summary>
             OpenPortCommand = new RelayCommand(() => {
-                if(!PortModel.SP.IsOpen)
+                if (!PortModel.SP.IsOpen)
                 {
                     //set the serialport basic properties
-                    if(SelectedPortNum==null|| SelectedPortNum == "")
+                    if (SelectedPortNum == null || SelectedPortNum == "")
                     {
                         IsOpenBtnChecked = false;
                         MessageBox.Show("串口打开失败，打开串口前请选择有效串口。");
@@ -179,13 +180,13 @@ namespace MySerialPortTestWPF
                     PortModel.SP.PortName = SelectedPortNum;
                     PortModel.SP.BaudRate = Convert.ToInt32(SelectedPortBaud);
                     PortModel.SP.StopBits = StopBitsDic[SelectedPortStopBit];
-                    PortModel.SP.DataBits=SelectedPortDataBit;
-                    PortModel.SP.Parity =PortParityDic[SelectedPortParity];
+                    PortModel.SP.DataBits = SelectedPortDataBit;
+                    PortModel.SP.Parity = PortParityDic[SelectedPortParity];
                     PortModel.SP.NewLine = "\r\n";
                     PortModel.SP.Encoding = System.Text.Encoding.GetEncoding("GB2312");
 
                     //打开串口
-                    if (services.OpenPort(ref PortModel.SP)==true)
+                    if (services.OpenPort(ref PortModel.SP) == true)
                     {//打开串口成功
                         IsOpenBtnChecked = true;
                     }
@@ -194,7 +195,8 @@ namespace MySerialPortTestWPF
                         IsOpenBtnChecked = false;
                         MessageBox.Show("串口打开失败，请检查配置或连线是否正常。");
                     }
-                }else
+                }
+                else
                 {
                     MySerialPortServices.ClosePort(ref PortModel.SP);
                 }
@@ -214,18 +216,19 @@ namespace MySerialPortTestWPF
             //PortModel.SP.Encoding = System.Text.Encoding.GetEncoding("GB2312");
             #endregion
 
-            
+
 
 
         }
         //处理接收数据
         private void RxDataProcess()
         {
-            if(this.Rx_count<1)
+            if (this.Rx_count < 1)
             {
                 Rx_Sb.Append(PortModel.RxDataBuffer);
                 Rx_count++;
-            }else
+            }
+            else
             {
                 Rx_Str = Rx_Sb.ToString();
                 this.Rx_count = 0;

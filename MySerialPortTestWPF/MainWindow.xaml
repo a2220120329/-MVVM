@@ -1,0 +1,144 @@
+﻿<Window x:Class="MySerialPortTestWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MySerialPortTestWPF"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        mc:Ignorable="d"
+        Title="串口通信助手" Height="450" Width="600">
+    <Border Padding="5">
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+
+            <!--串口设置及串口信息接收区-->
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--串口设置区-->
+                <StackPanel Grid.Column="0" Margin="0 0 5 5">
+                    <!--串口设置-->
+                    <Border BorderThickness="2" BorderBrush="LightGray">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="2.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <!--串口位-->
+                            <Label Content="串口位"/>
+                            <ComboBox ItemsSource="{Binding SerialPortNums}" 
+                                      SelectedItem="{Binding SelectedPortNum}"
+                                      Grid.Column="1"
+                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="4.2,3,4.6,0" VerticalAlignment="Top">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="DropDownOpened">
+                                        <i:InvokeCommandAction Command="{Binding UpdateSerialPortNames}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                            <!--波特率-->
+                            <Label Content="波特率" Grid.Row="1"/>
+                            <!--To Do 修改ComboBox Binding-->
+                            <ComboBox ItemsSource="{Binding SerialPortBaud}"  
+                                      Grid.Row="1"
+                                      SelectedItem="{Binding SelectedPortBaud}"
+                                      Grid.Column="1"
+                                      Style="{StaticResource SerialPortComoBoxStyle}"/>
+
+                            <!--停止位-->
+                            <Label Content="停止位" Grid.Row="2"/>
+                            <!--To Do 修改ComboBox Binding-->
+                            <ComboBox ItemsSource="{Binding SerialPortStopBits}"  
+                                      SelectedItem="{Binding SelectedPortStopBit}"
+                                      Grid.Row="2"
+                                      Grid.Column="1"
+                                      Style="{StaticResource SerialPortComoBoxStyle}"/>
+                            <!--数据位-->
+                            <Label Content="数据位" Grid.Row="3"/>
+                            <!--To Do 修改ComboBox Binding-->
+                            <ComboBox ItemsSource="{Binding SerialPortDataBits}"  
+                                      SelectedItem="{Binding SelectedPortDataBit}"
+                                      Grid.Row="3"
+                                      Grid.Column="1"
+                                      Style="{StaticResource SerialPortComoBoxStyle}"/>
+                            <!--校验位-->
+                            <Label Content="校验位" Grid.Row="4"/>
+                            <!--To Do 修改ComboBox Binding-->
+                            <ComboBox ItemsSource="{Binding SerialPortParities}"  
+                                      SelectedItem="{Binding SelectedPortParity}"
+                                      Grid.Row="4"
+                                      Grid.Column="1"
+                                      Style="{StaticResource SerialPortComoBoxStyle}"/>
+                            <!--串口操作-->
+                            <Label Content="校验位" Grid.Row="5"/>
+                            <!--To Do 修改ComboBox Binding-->
+                            <StackPanel Orientation="Horizontal"
+                                        Height="20"
+                                          Width="80"
+                                      Grid.Row="5"
+                                      Grid.Column="1"
+                                        HorizontalAlignment="Center">
+                                <Border Width="19" Height="19" CornerRadius="20">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=OpenPortBtn,Path=IsChecked}" Value="false">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=OpenPortBtn,Path=IsChecked}" Value="true">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                                <ToggleButton BorderThickness="0" Width="60"
+                                              x:Name="OpenPortBtn"
+                                              IsChecked="{Binding IsOpenBtnChecked,Mode=TwoWay,FallbackValue=false}"
+                                              Command="{Binding OpenPortCommand}"
+                                              Content="打开串口"/>
+                            </StackPanel>
+                            
+
+                        </Grid>
+                    </Border>
+                    <!--发送设置-->
+                    
+                </StackPanel>
+                <!--串口接收区-->
+                <Grid Grid.Column="1" Margin="0 0 0 5" >
+                    <TextBox AcceptsReturn="True"  
+                             VerticalScrollBarVisibility="Auto"
+                             IsUndoEnabled="False"
+                             TextWrapping="Wrap" 
+                             Background="Purple"
+                             IsReadOnly="True"
+                             
+                             Text="{Binding Rx_Str}"
+                               />
+                </Grid>
+                
+
+            </Grid>
+            <!--串口发送设置及发送区-->
+            <Grid Grid.Row="1" Background="Yellow"/>
+            <!--串口状态显示区-->
+            <Grid Grid.Row="2" Background="green"/>
+        </Grid>
+    </Border>
+    
+</Window>

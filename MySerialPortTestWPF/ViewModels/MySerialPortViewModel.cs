@@ -7,14 +7,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MySerialPortTestWPF
 {
+    public delegate void RxDataProcessedHandler();
     public class MySerialPortViewModel : BaseViewModel
     {
         #region Private Members
         Window mWindow;
+        TextBox mRxTextBox;
         MySerialPort PortModel;
+        #endregion
+
+        #region events
+
+        public event RxDataProcessedHandler RxDataProcessedEvent;
         #endregion
 
         #region Public Properties
@@ -53,6 +61,10 @@ namespace MySerialPortTestWPF
         #endregion
 
         #endregion
+        #region 是否滚动至最新行
+        public Boolean IsScrollToEnd { get; set; }
+        #endregion
+
 
         #region Commands
         /// <summary>
@@ -68,9 +80,10 @@ namespace MySerialPortTestWPF
         /// Init the necessary items.
         /// </summary>
         /// <param name="window"></param>
-        public MySerialPortViewModel(Window window)
+        public MySerialPortViewModel(Window window,ref TextBox textBlock)
         {
             mWindow = window;
+            mRxTextBox = textBlock;
 
             //Init the private members
             PortModel = new MySerialPort();
@@ -142,7 +155,8 @@ namespace MySerialPortTestWPF
 
             Rx_Sb = new StringBuilder();
             Rx_Str = "";
-
+            //是否滚动至最新
+            IsScrollToEnd = true;
 
             //Init the commands
             #region UpdateSerialPortNames Commands
@@ -230,8 +244,16 @@ namespace MySerialPortTestWPF
             }
             else
             {
-                Rx_Str = Rx_Sb.ToString();
+                mWindow.Dispatcher.Invoke(() => {
+                    Rx_Str = Rx_Sb.ToString();
+                    if (IsScrollToEnd)
+                    {
+                        mRxTextBox.ScrollToEnd();
+                    }
+                });
+                
                 this.Rx_count = 0;
+                
             }
 
         }

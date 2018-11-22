@@ -7,15 +7,18 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         
-        Title="串口通信助手" Height="450" Width="600">
+        Title="串口通信助手" Height="480" Width="550"
+        MinHeight="480"
+        MinWidth="550">
     <Border Padding="2">
         <Border.Style>
             <Style TargetType="{x:Type Border}">
                 <Setter Property="Background" >
                     <Setter.Value>
                         <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
-                            <GradientStop Color="#26a69a" Offset="0.0"/>
-                            <GradientStop Color="#009688" Offset="1"/>
+                            <GradientStop Color="#00bcd4" Offset="0.0"/>
+                            <GradientStop Color="#00acc1" Offset="0.4"/>
+                            <GradientStop Color="#00838f" Offset="1"/>
                         </LinearGradientBrush>
                     </Setter.Value>
                 </Setter>
@@ -25,19 +28,18 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="2*"/>
-                <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
-
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <!--串口设置及串口信息接收区-->
-            <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <Grid Grid.RowSpan="2">
                 <!--串口设置区-->
                 <StackPanel Grid.Column="0" Margin="0 0 5 5">
                     <!--串口设置-->
-                    <Border BorderThickness="2" BorderBrush="White">
+
+                    <GroupBox Header="串口设置" Foreground="White" BorderBrush="White">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1.5*"/>
@@ -56,7 +58,7 @@
                             <ComboBox ItemsSource="{Binding SerialPortNums}" 
                                       SelectedItem="{Binding SelectedPortNum}"
                                       Grid.Column="1"
-                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="4.2,3,3.8,0" VerticalAlignment="Top" Width="Auto">
+                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="1.4,3,1.8,0" VerticalAlignment="Top" Width="Auto">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="DropDownOpened">
                                         <i:InvokeCommandAction Command="{Binding UpdateSerialPortNames}"/>
@@ -129,18 +131,155 @@
                                               Content="打开串口"/>
 
                             </StackPanel>
-
-
                         </Grid>
-                    </Border>
-                    <!--发送设置-->
-                    <Border  Margin="0 5 0 0" BorderBrush="White" BorderThickness="0 2 0 0"/>
-                    <Label Content="接收设置" />
+                    </GroupBox>
+                    <!--接收设置-->
+                    <GroupBox Header="接收设置" Foreground="White">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Content="ASCII" IsChecked="True"/>
+                                <RadioButton Content="HEX" Margin="10 0 0 0"/>
 
+                            </StackPanel>
+                            <CheckBox Content="自动换行" HorizontalAlignment="Left"/>
+                            <CheckBox Content="显示时间" HorizontalAlignment="Left"/>
+                            <CheckBox Content="追踪最新" HorizontalAlignment="Left" IsChecked="{Binding IsScrollToEnd}"/>
+                            
+                        </StackPanel>
+                    </GroupBox>
+                    <!--串口发送设置-->
+                    <Grid Grid.Row="1"
+                        Background="Transparent">
+                        <GroupBox Header="串口发送设置">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="ASCII" IsChecked="True"/>
+                                    <RadioButton Content="HEX" Margin="10 0 0 0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <CheckBox Content="ASCII" Height="18"/>
+                                    <StackPanel Margin="10 0 0 0" Orientation="Horizontal">
+                                        <TextBox Width="50" Text="1000" Background="Transparent" Foreground="White"
+                                                 BorderBrush="White" Height="18"
+                                                 HorizontalContentAlignment="Center"
+                                                 VerticalContentAlignment="Center"/>
+                                        <Label Content="ms"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Button Margin="0 0 0 2" Content="发送" Height="24" Width="50" HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Grid>
+                                                            <Border BorderBrush="White" BorderThickness="1"/>
+                                                            <Label Background="Transparent" Foreground="{TemplateBinding Foreground}"
+                                                                   Content="{TemplateBinding Content}"
+                                                                   x:Name="BtnLabelContent"
+                                                                   HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                   VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                    <!--串口状态显示区-->
+                    <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="Transparent">
+                        <GroupBox Header="串口状态">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="状态:"/>
+                                    <Label Content="{Binding ElementName=OpenPortBtn,Path=IsChecked}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="发送:"/>
+                                    <Label Content="112"/>
+                                    <Label Content="Bytes"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="接收:"/>
+                                    <Label Content="{Binding Rx_Str.Length,FallbackValue=0}"/>
+                                    <Label Content="Bytes"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                        </GroupBox>
+                                  
+                    </Grid>
+                    <!-- ComboboxStyle-->
+                    <!--<ComboBox SelectedIndex="0" Foreground="White">
+                        <ComboBox.Style>
+                            <Style TargetType="{x:Type ComboBox}">
+                                <Setter Property="Template" >
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ComboBox}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.7*"/>
+                                                    <ColumnDefinition Width="0.3*" MaxWidth="30"/>
+                                                </Grid.ColumnDefinitions>
+                                                -->
+                    <!--文字区域背景和边线样式-->
+                    <!--
+                                                <TextBox Background="Transparent" VerticalAlignment="Center"  Grid.Column="0" Foreground="White" BorderBrush="#03ffea" BorderThickness="0" IsReadOnly="{TemplateBinding IsReadOnly}" Text="{TemplateBinding Text}"></TextBox>
+                                                <Border  Grid.Column="0" BorderThickness="1" BorderBrush="White" CornerRadius="1,0,0,1">
+                                                </Border>
+                                                -->
+                    <!--右侧下拉button设置-->
+                    <!--
+                                                <Border Grid.Column="1" BorderThickness="0,1,1,1" BorderBrush="White" CornerRadius="0,1,1,0">
+                                                <ToggleButton BorderThickness="3" BorderBrush="White"  IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"></ToggleButton>
+                                                </Border>
+                                                -->
+                    <!--弹出popup整体设置-->
+                    <!--
+                                                <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide" >
+                                                    -->
+                    <!--弹出popup边框-->
+                    <!--
+                                                    <Border CornerRadius="1" BorderBrush="White" BorderThickness="1,0,1,1" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{TemplateBinding ActualWidth}" x:Name="DropDown" SnapsToDevicePixels="True">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
+                                                        </Border.Effect>
+                                                        -->
+                    <!--下拉幕布边界背景设置 MaxHeight="{TemplateBinding MaxDropDownHeight}"-->
+                    <!--
+                                                        <ScrollViewer Margin="0,0,0,0"   SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" BorderBrush="White" BorderThickness="2" >
+                                                            -->
+                    <!-- StackPanel 用于显示子级，方法是将 IsItemsHost 设置为 True -->
+                    <!--
+                                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" Background="Transparent" />
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </Popup>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ComboBox.Style>
+                        <ComboBoxItem Content="Hello"/>
+                        <ComboBoxItem Content="World"/>
+                    </ComboBox>-->
                 </StackPanel>
-                <!--串口接收区-->
-                <Grid Grid.Column="1" Margin="0 0 0 5" >
-                    <TextBox AcceptsReturn="True"  
+            </Grid>
+            <!--串口接收区-->
+            <Grid Grid.Column="1" Grid.RowSpan="2" Margin="0 0 0 5" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <TextBox AcceptsReturn="True"
+                         Margin="0 8 0 0"
+                         x:Name="RxTextBox"
                              VerticalScrollBarVisibility="Auto"
                              IsUndoEnabled="False"
                              TextWrapping="Wrap" 
@@ -151,12 +290,20 @@
                              BorderBrush="White"
                              Text="{Binding Rx_Str}"
                                />
-                </Grid>
+                <TextBox AcceptsReturn="True"  
+                         Grid.Row="1"
+                         Margin="0 8 0 0"
+                             VerticalScrollBarVisibility="Auto"
+                             IsUndoEnabled="True"
+                             TextWrapping="Wrap" 
+                             Background="Transparent"
+                             BorderThickness="2"
+                             Foreground="White"
+                             BorderBrush="White"
+                             
+                               />
+                
             </Grid>
-            <!--串口发送设置及发送区-->
-            <Grid Grid.Row="1" Background="Transparent"/>
-            <!--串口状态显示区-->
-            <Grid Grid.Row="2" Background="Transparent"/>
         </Grid>
     </Border>
 

@@ -21,3 +21,5 @@ C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTest
 C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\obj\Debug\Styles\ComoBoxs.baml
 C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\obj\Debug\Styles\Buttons.baml
 C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\obj\Debug\Styles\Texts.baml
+C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\obj\Debug\Styles\Colors.baml
+C:\Users\liujianzhi\Dropbox\C# Projects\wpf\MySerialPortTestWPF\MySerialPortTestWPF\MySerialPortTestWPF\obj\Debug\MySerialPortTestWPF.csprojAssemblyReference.cache

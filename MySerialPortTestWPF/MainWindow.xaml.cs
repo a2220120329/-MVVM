@@ -20,10 +20,13 @@ namespace MySerialPortTestWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        MySerialPortViewModel mViewModel;
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MySerialPortViewModel(this);
+
+            mViewModel = new MySerialPortViewModel(this, ref this.RxTextBox);
+            this.DataContext = mViewModel;
         }
 
     }

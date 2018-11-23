@@ -14,12 +14,14 @@ namespace MySerialPortTestWPF
         /// The object of the serialport
         /// </summary>
         public SerialPort SP;
-        public string RxDataBuffer;
+        //public string RxDataBuffer;
+        public Queue<string> RxQue;
         #endregion
         #region Ctor
         public MySerialPort()
         {
             SP = new SerialPort();
+            RxQue = new Queue<string>();
         }
         #endregion
     }

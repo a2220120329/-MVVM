@@ -30,7 +30,7 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="155"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--串口设置及串口信息接收区-->
@@ -137,13 +137,41 @@
                     <GroupBox Header="接收设置" Foreground="White">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton Content="ASCII" IsChecked="True"/>
-                                <RadioButton Content="HEX" Margin="10 0 0 0"/>
+                                <RadioButton Content="ASCII" IsChecked="{Binding IsRxAsciiChecked}"/>
+
+                                <RadioButton Content="HEX" Margin="18 0 0 0"/>
 
                             </StackPanel>
-                            <CheckBox Content="自动换行" HorizontalAlignment="Left"/>
-                            <CheckBox Content="显示时间" HorizontalAlignment="Left"/>
-                            <CheckBox Content="追踪最新" HorizontalAlignment="Left" IsChecked="{Binding IsScrollToEnd}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Content="自动换行" HorizontalAlignment="Left" IsChecked="{Binding IsRxAutoReturn}"/>
+                                <CheckBox Content="显示时间" HorizontalAlignment="Left" IsChecked="{Binding IsRxShowCurrTime}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Content="追踪最新" HorizontalAlignment="Left" IsChecked="{Binding IsScrollToEnd,FallbackValue=true}"/>
+                                <Button Margin="5 5 0 2" Content="清除" Height="24" Width="50" HorizontalAlignment="Left"
+                                        Foreground="White" Command="{Binding ClearRxDataCommand}"
+                                        >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Grid>
+                                                            <Border BorderBrush="White" BorderThickness="1"/>
+                                                            <Label Background="Transparent" Foreground="{TemplateBinding Foreground}"
+                                                                   Content="{TemplateBinding Content}"
+                                                                   x:Name="BtnLabelContent"
+                                                                   HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                   VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                            
                             
                         </StackPanel>
                     </GroupBox>
@@ -152,22 +180,23 @@
                         Background="Transparent">
                         <GroupBox Header="串口发送设置">
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal">
+                                <!--<StackPanel Orientation="Horizontal">
                                     <RadioButton Content="ASCII" IsChecked="True"/>
                                     <RadioButton Content="HEX" Margin="10 0 0 0"/>
-                                </StackPanel>
+                                </StackPanel>-->
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <CheckBox Content="ASCII" Height="18"/>
+                                    <CheckBox Content="定时" Height="18" IsChecked="{Binding IsSetTimer}"/>
                                     <StackPanel Margin="10 0 0 0" Orientation="Horizontal">
-                                        <TextBox Width="50" Text="1000" Background="Transparent" Foreground="White"
+                                        <TextBox Width="50"  Background="Transparent" Foreground="White"
                                                  BorderBrush="White" Height="18"
+                                                 Text="{Binding RepeatTime,FallbackValue=1000}"
                                                  HorizontalContentAlignment="Center"
                                                  VerticalContentAlignment="Center"/>
                                         <Label Content="ms"/>
                                     </StackPanel>
                                 </StackPanel>
                                 <Button Margin="0 0 0 2" Content="发送" Height="24" Width="50" HorizontalAlignment="Left"
-                                        Foreground="White"
+                                        Foreground="White" Command="{Binding SendTxDataCommand}"
                                         >
                                     <Button.Style>
                                         <Style TargetType="{x:Type Button}">
@@ -201,12 +230,12 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="发送:"/>
-                                    <Label Content="112"/>
+                                    <Label Content="{Binding SendNums,FallbackValue=0}"/>
                                     <Label Content="Bytes"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="接收:"/>
-                                    <Label Content="{Binding Rx_Str.Length,FallbackValue=0}"/>
+                                    <Label Content="{Binding ElementName=RxTextBox,Path=Text.Length,FallbackValue=0}"/>
                                     <Label Content="Bytes"/>
                                 </StackPanel>
                             </StackPanel>
@@ -296,6 +325,7 @@
                              VerticalScrollBarVisibility="Auto"
                              IsUndoEnabled="True"
                              TextWrapping="Wrap" 
+                              Text="{Binding TxData}"
                              Background="Transparent"
                              BorderThickness="2"
                              Foreground="White"

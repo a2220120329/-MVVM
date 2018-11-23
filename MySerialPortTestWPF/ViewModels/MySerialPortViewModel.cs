@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -22,17 +23,43 @@ namespace MySerialPortTestWPF
 
         #region events
 
-        public event RxDataProcessedHandler RxDataProcessedEvent;
         #endregion
 
         #region Public Properties
+
+        #region Boolean Properties
+        //接收16进制
+        public bool IsRxAsciiChecked { get; set; } = true;
+        //自送换行
+        public bool IsRxAutoReturn { get; set; } = false;
+        public bool IsRxShowCurrTime { get; set; } = false;
+        //设置是否重复发送
+        public bool IsSetTimer { get; set; } = false;
+        public int RepeatTime { set; get; } = 1000;
+        //串口打开ToggleButton标志
+        public bool IsOpenBtnChecked { get; set; } = false;
+        // 是否滚动至最新行
+        public Boolean IsScrollToEnd { get; set; }
+        
+        #endregion
+
+        #region TxData
+        //发送数据
+        public string TxData { get; set; }
+        public long SendNums { get; set; } = 0;
+        #endregion
+
+        #region RxData
+        public StringBuilder Rx_Sb { get; set; }
+        public String Rx_Str { get; set; }
+        private long Rx_count = 0;
+        #endregion
+
         #region SerialNums
         public ObservableCollection<string> SerialPortNums { get; set; }
         public string SelectedPortNum { get; set; }
         #endregion
 
-        //串口打开ToggleButton标志
-        public bool IsOpenBtnChecked { get; set; } = false;
         #region SerialPortBaud
         public List<string> SerialPortBaud { get; set; }
         public string SelectedPortBaud { get; set; }
@@ -54,17 +81,8 @@ namespace MySerialPortTestWPF
         public string SelectedPortParity { get; set; }
         public Dictionary<string, Parity> PortParityDic { get; set; }
         #endregion
-        #region RxData
-        public StringBuilder Rx_Sb { get; set; }
-        public String Rx_Str { get; set; }
-        private int Rx_count = 0;
-        #endregion
 
         #endregion
-        #region 是否滚动至最新行
-        public Boolean IsScrollToEnd { get; set; }
-        #endregion
-
 
         #region Commands
         /// <summary>
@@ -73,6 +91,10 @@ namespace MySerialPortTestWPF
         public RelayCommand UpdateSerialPortNames { get; set; }
 
         public RelayCommand OpenPortCommand { get; set; }
+
+        public RelayCommand SendTxDataCommand { get; set; }
+
+        public RelayCommand ClearRxDataCommand { get; set; }
         #endregion
 
         #region Ctor
@@ -82,17 +104,29 @@ namespace MySerialPortTestWPF
         /// <param name="window"></param>
         public MySerialPortViewModel(Window window,ref TextBox textBlock)
         {
-            mWindow = window;
-            mRxTextBox = textBlock;
+
 
             //Init the private members
+            #region init the private members
             PortModel = new MySerialPort();
             MySerialPortServices services = new MySerialPortServices(ref PortModel);
-            services.RxDataEvent += RxDataProcess;
-
-
+            mWindow = window;
+            mRxTextBox = textBlock;
+            #endregion
 
             //init the public properties
+            #region single properties
+            //发送数据
+            TxData = "";
+            //接收数据处理缓存
+            Rx_Sb = new StringBuilder();
+            //接收数据
+            Rx_Str = "";
+            //是否滚动至最新
+            IsScrollToEnd = true;
+
+            #endregion
+
             #region PortNums
             SerialPortNums = new ObservableCollection<string>();
             if (SerialPort.GetPortNames().Length != 0)
@@ -153,11 +187,6 @@ namespace MySerialPortTestWPF
             PortParityDic.Add("校验位总为1", Parity.Mark);
             #endregion
 
-            Rx_Sb = new StringBuilder();
-            Rx_Str = "";
-            //是否滚动至最新
-            IsScrollToEnd = true;
-
             //Init the commands
             #region UpdateSerialPortNames Commands
             /// <summary>
@@ -177,6 +206,40 @@ namespace MySerialPortTestWPF
 
             });
             #endregion
+
+            #region ClearRxDataCommand
+            ClearRxDataCommand = new RelayCommand(async()=> {
+                await Task.Run(()=> {
+                    mWindow.Dispatcher.Invoke(()=> {
+                        mRxTextBox.Text = "";
+                    });
+                });
+            });
+            #endregion
+
+            #region SendTxDataCommand
+            SendTxDataCommand = new RelayCommand(async () => {
+                await Task.Run(async() =>
+                {
+                    do
+                    {
+                       SendNums += TxData.Length;
+                        try
+                        {
+                            PortModel.SP.Write(TxData);
+                        }
+                        catch(Exception e)
+                        {
+                            MessageBox.Show("串口已关闭");
+                        }
+                       
+                       await Task.Delay(RepeatTime);
+                    } while (IsSetTimer&&PortModel.SP.IsOpen);
+
+                });
+            });
+            #endregion
+
             #region OpenPortCommand Commands
             /// <summary>
             /// When the openport button is clicked close or open the port
@@ -184,6 +247,8 @@ namespace MySerialPortTestWPF
             OpenPortCommand = new RelayCommand(() => {
                 if (!PortModel.SP.IsOpen)
                 {
+                    
+
                     //set the serialport basic properties
                     if (SelectedPortNum == null || SelectedPortNum == "")
                     {
@@ -202,6 +267,30 @@ namespace MySerialPortTestWPF
                     //打开串口
                     if (services.OpenPort(ref PortModel.SP) == true)
                     {//打开串口成功
+
+                     //绑定接收数据事件
+                        PortModel.SP.DataReceived += DataReceivedCallBack;
+                        //开启数据处理线程
+                        Task.Run(async () => {
+                            while (PortModel.SP.IsOpen)
+                            {
+                                int count = PortModel.RxQue.Count;
+                                StringBuilder temp_strb = new StringBuilder();
+                                if (count > 0)
+                                {
+                                    //取出当前队列中数据
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        temp_strb.Append(PortModel.RxQue.Dequeue());
+                                    }
+                                    mWindow.Dispatcher.Invoke(() => {
+                                        mRxTextBox.AppendText(temp_strb.ToString());//ui更新数据
+                                        mRxTextBox.ScrollToEnd();
+                                    });
+                                }
+                                await Task.Delay(500);
+                            }
+                        });
                         IsOpenBtnChecked = true;
                     }
                     else
@@ -218,7 +307,7 @@ namespace MySerialPortTestWPF
             });
             #endregion
 
-            #region SerialPort Open Template
+            #region SerialPort Open Template Code
             //串口初始化项目
             //初始化，datarecived事件
             //PortModel.SP.ReceivedBytesThreshold = 1;
@@ -230,33 +319,44 @@ namespace MySerialPortTestWPF
             //PortModel.SP.Encoding = System.Text.Encoding.GetEncoding("GB2312");
             #endregion
 
-
-
-
-        }
-        //处理接收数据
-        private void RxDataProcess()
-        {
-            if (this.Rx_count < 1)
-            {
-                Rx_Sb.Append(PortModel.RxDataBuffer);
-                Rx_count++;
-            }
-            else
-            {
-                mWindow.Dispatcher.Invoke(() => {
-                    Rx_Str = Rx_Sb.ToString();
-                    if (IsScrollToEnd)
-                    {
-                        mRxTextBox.ScrollToEnd();
-                    }
-                });
-                
-                this.Rx_count = 0;
-                
-            }
-
         }
         #endregion
+        private void DataReceivedCallBack(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+
+                SerialPort port = sender as SerialPort;
+                byte[] DataBuff = new byte[port.BytesToRead];
+                port.Read(DataBuff, 0, port.BytesToRead);
+                string temp = "";
+                if(IsRxAsciiChecked)
+                {
+                    temp=Encoding.Default.GetString(DataBuff);
+                }
+                else
+                {
+                    foreach(byte b in DataBuff)
+                    {
+                        Rx_Sb.Append(b.ToString("X2") + " ");
+                    }
+                    temp = Rx_Sb.ToString();
+                }
+                //显示时间戳
+                if (IsRxShowCurrTime) temp += DateTime.Now.Hour.ToString() +":"+ DateTime.Now.Minute.ToString() + ":" + DateTime.Now.Second.ToString() + ":" + DateTime.Now.Millisecond.ToString();
+                //自动回车
+                if (IsRxAutoReturn) temp += "\r";
+                PortModel.RxQue.Enqueue(temp);
+                Rx_Sb.Clear();
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("error:接受信息异常" + ex.ToString());
+            }
+        }
     }
+
+        
+    
 }

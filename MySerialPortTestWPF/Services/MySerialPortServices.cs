@@ -18,7 +18,6 @@ namespace MySerialPortTestWPF
 
         #region Public Properties
 
-        public event RxDataHandler RxDataEvent;
         #endregion
 
         #region public Methods
@@ -37,7 +36,6 @@ namespace MySerialPortTestWPF
                 try
                 {
                     sp.Open();
-                    sp.DataReceived += new SerialDataReceivedEventHandler(SerialPortDataRecived);
                     return true;
                 }
                 catch (Exception)
@@ -72,31 +70,6 @@ namespace MySerialPortTestWPF
         }
 
         #endregion
-
-        #region recive data
-        /// <summary>
-        /// Recive the data from serialport callback
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="temp"></param>
-        private  void SerialPortDataRecived(object sender, SerialDataReceivedEventArgs temp)
-        {
-            try
-            {
-                SerialPort port = sender as SerialPort;
-                byte[] DataBuff = new byte[port.BytesToRead];
-                port.Read(DataBuff, 0, port.BytesToRead);
-                mPort.RxDataBuffer = Encoding.Default.GetString(DataBuff);
-                RxDataEvent();
-                
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("error:接受信息异常" + ex.ToString());
-            }
-        }
-        #endregion
-
         #endregion
 
 

@@ -7,12 +7,12 @@ using System.Windows;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("MySerialPortTestWPF")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("串口调试助手---MVVM/Queue")]
+[assembly: AssemblyDescription("刘建志于2018年11月23日完成，基于MVVM设计模式和Queue数据结构，采取异步队列方式接收数据流。")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MySerialPortTestWPF")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("西安交通大学")]
+[assembly: AssemblyProduct("串口调试助手V1.0.0")]
+[assembly: AssemblyCopyright("Copyright Jianzhi Liu©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

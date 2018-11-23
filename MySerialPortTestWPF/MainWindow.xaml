@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:MySerialPortTestWPF"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        
-        Title="串口通信助手" Height="480" Width="550"
-        MinHeight="480"
+        ResizeMode="NoResize"
+        Title="串口通信助手---MVVM/Queue" Height="490" Width="550"
+        MinHeight="490"
         MinWidth="550">
     <Border Padding="2">
         <Border.Style>
@@ -58,7 +58,7 @@
                             <ComboBox ItemsSource="{Binding SerialPortNums}" 
                                       SelectedItem="{Binding SelectedPortNum}"
                                       Grid.Column="1"
-                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="1.4,3,1.8,0" VerticalAlignment="Top" Width="Auto">
+                                      Style="{StaticResource SerialPortComoBoxStyle}" Margin="3,3,3.4,0" VerticalAlignment="Top" Width="Auto">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="DropDownOpened">
                                         <i:InvokeCommandAction Command="{Binding UpdateSerialPortNames}"/>
@@ -189,34 +189,39 @@
                                     <StackPanel Margin="10 0 0 0" Orientation="Horizontal">
                                         <TextBox Width="50"  Background="Transparent" Foreground="White"
                                                  BorderBrush="White" Height="18"
-                                                 Text="{Binding RepeatTime,FallbackValue=1000}"
+                                                 Text="{Binding RepeatTime,FallbackValue=1000,UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Center"
                                                  VerticalContentAlignment="Center"/>
                                         <Label Content="ms"/>
                                     </StackPanel>
                                 </StackPanel>
-                                <Button Margin="0 0 0 2" Content="发送" Height="24" Width="50" HorizontalAlignment="Left"
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Margin="0 0 0 2" Content="发送" Height="24" Width="50" HorizontalAlignment="Left"
                                         Foreground="White" Command="{Binding SendTxDataCommand}"
                                         >
-                                    <Button.Style>
-                                        <Style TargetType="{x:Type Button}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type Button}">
-                                                        <Grid>
-                                                            <Border BorderBrush="White" BorderThickness="1"/>
-                                                            <Label Background="Transparent" Foreground="{TemplateBinding Foreground}"
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type Button}">
+                                                            <Grid>
+                                                                <Border BorderBrush="White" BorderThickness="1"/>
+                                                                <Label Background="Transparent" Foreground="{TemplateBinding Foreground}"
                                                                    Content="{TemplateBinding Content}"
                                                                    x:Name="BtnLabelContent"
                                                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                                        </Grid>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
+                                                            </Grid>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Label Content="状态:"/>
+                                    <TextBlock Margin="0 -1 0 0" Text="{Binding TxDataState, FallbackValue=已停止}" VerticalAlignment="Center" Foreground="White"/>
+                                </StackPanel>
+                                
                             </StackPanel>
                         </GroupBox>
                     </Grid>
@@ -239,10 +244,10 @@
                                     <Label Content="Bytes"/>
                                 </StackPanel>
                             </StackPanel>
-                            
+
                         </GroupBox>
-                                  
                     </Grid>
+                    <Label Height="30" Grid.Row="2" Content="刘建志 2018/11/23"/>
                     <!-- ComboboxStyle-->
                     <!--<ComboBox SelectedIndex="0" Foreground="White">
                         <ComboBox.Style>
@@ -325,7 +330,7 @@
                              VerticalScrollBarVisibility="Auto"
                              IsUndoEnabled="True"
                              TextWrapping="Wrap" 
-                              Text="{Binding TxData}"
+                              Text="{Binding TxData,UpdateSourceTrigger=PropertyChanged}"
                              Background="Transparent"
                              BorderThickness="2"
                              Foreground="White"

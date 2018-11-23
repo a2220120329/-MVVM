@@ -47,6 +47,8 @@ namespace MySerialPortTestWPF
         //发送数据
         public string TxData { get; set; }
         public long SendNums { get; set; } = 0;
+        //定时发送状态
+        public string TxDataState { get; set; } = "已停止";
         #endregion
 
         #region RxData
@@ -232,10 +234,10 @@ namespace MySerialPortTestWPF
                         {
                             MessageBox.Show("串口已关闭");
                         }
-                       
-                       await Task.Delay(RepeatTime);
+                        TxDataState = "运行中";
+                        await Task.Delay(RepeatTime);
                     } while (IsSetTimer&&PortModel.SP.IsOpen);
-
+                    TxDataState = "已停止";
                 });
             });
             #endregion
@@ -285,6 +287,7 @@ namespace MySerialPortTestWPF
                                     }
                                     mWindow.Dispatcher.Invoke(() => {
                                         mRxTextBox.AppendText(temp_strb.ToString());//ui更新数据
+                                        if(IsScrollToEnd)
                                         mRxTextBox.ScrollToEnd();
                                     });
                                 }
